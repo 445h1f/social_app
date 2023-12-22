@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Profile
 
 #login form
 class LoginForm(forms.Form):
@@ -25,3 +26,19 @@ class SignupForm(forms.ModelForm):
 
         return self.cleaned_data['password_confirm']
 
+
+
+# form to edit user
+class UserEditForm(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+
+# form to edit profile of user
+class UserProfileEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('image', )

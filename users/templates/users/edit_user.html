@@ -1,0 +1,11 @@
+{% extends 'users/base.html' %}
+
+{% block body %}
+
+  <form method="post" enctype="multipart/form-data">
+    {{ user_form.as_p }}
+    {{ profile_form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="Save">
+  </form>
+{% endblock %}

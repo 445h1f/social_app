@@ -8,11 +8,15 @@
 </head>
 <body>
   {% if request.user.is_authenticated %}
+    <h1>Logged in as {{ request.user.username }}</h1>
+
     <form method="post" action="{% url 'logout' %}">
       {% csrf_token %}
       <input type="submit" value="Logout">
     </form>
-    <button><a href="{% url 'password_change' %}">Change Password</a></button>
+    <a href="{% url 'password_change' %}">Change Password</a>
+    <a href="{% url 'edit_user' %}">Edit Details</a>
+
   {% else %}
     <button><a href="{% url 'login' %}">Login</a></button>
     <button><a href="{% url 'signup' %}">Sign Up</a></button>

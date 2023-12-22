@@ -1,8 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from .forms import LoginForm, SignupForm
+from .forms import LoginForm, SignupForm, UserEditForm, UserProfileEditForm
 from django.contrib.auth.decorators import login_required
+from .models import Profile
 
 
 # Create your views here.
@@ -61,9 +62,45 @@ def user_signup(request):
             new_user = signup_form.save(commit=False)
             new_user.set_password(signup_form.cleaned_data['password_confirm'])
             new_user.save()
-
+            Profile.objects.create(user=new_user)
             return render(request, 'users/signup_complete.html')
 
     else:
         signup_form = SignupForm()
         return render(request, 'users/signup.html', {'signup_form': signup_form})
+
+
+@login_required
+def edit_user(request):
+
+    # handling when form is submitted
+    if request.method == 'POST':
+        user_form = UserEditForm(
+            instance=request.user,
+            data=request.POST
+        )
+
+        profile_form = UserProfileEditForm(
+            instance=request.user.profile,
+            data = request.POST,
+            files=request.FILES
+        )
+
+        print(request.FILES)
+        # saving edits if both forms are valid
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('edit_user')
+        else:
+            return HttpResponse('Invalid input')
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = UserProfileEditForm(instance=request.user.profile)
+
+    context = {
+        "user_form" : user_form,
+        "profile_form" : profile_form
+    }
+
+    return render(request, 'users/edit_user.html', context=context)
