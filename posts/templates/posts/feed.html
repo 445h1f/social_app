@@ -1,0 +1,8 @@
+{% extends 'users/base.html' %}
+
+
+{% block body %}
+  {% for post in posts %}
+    {% include 'posts/components/post.html' %}
+  {% endfor %}
+{% endblock %}

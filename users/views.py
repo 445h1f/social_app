@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import LoginForm, SignupForm, UserEditForm, UserProfileEditForm
 from django.contrib.auth.decorators import login_required
 from .models import Profile
+from posts.models import Post
 
 
 # Create your views here.
@@ -44,7 +45,15 @@ def user_login(request):
 # handles index page request
 @login_required
 def user_index(request):
-    return render(request, 'users/index.html')
+    # displaying all posts by user
+    current_user = request.user
+    posts = Post.objects.filter(user=current_user)
+
+    context = {
+        "posts" : posts,
+    }
+
+    return render(request, 'users/index.html', context)
 
 
 # handles user signup request
@@ -104,3 +113,14 @@ def edit_user(request):
     }
 
     return render(request, 'users/edit_user.html', context=context)
+
+
+# handles profile page request of user
+@login_required
+def profile(request):
+    user_profile = Profile.objects.get(user=request.user)
+
+    context = {
+        "profile" : user_profile,
+    }
+    return render(request, 'users/profile.html', context)

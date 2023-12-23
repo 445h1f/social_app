@@ -1,30 +1,54 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Users</title>
-</head>
-<body>
-  {% if request.user.is_authenticated %}
-    <h1>Logged in as {{ request.user.username }}</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% if title %} {{ title }} {% else %} SocialApp {% endif %}</title>
+    {% include 'users/head/css.html' %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    {% include 'users/components/navbar.html' %}
 
-    <form method="post" action="{% url 'logout' %}">
-      {% csrf_token %}
-      <input type="submit" value="Logout">
-    </form>
-    <a href="{% url 'password_change' %}">Change Password</a>
-    <a href="{% url 'edit_user' %}">Edit Details</a>
+    {% block body %} {% endblock %}
 
-  {% else %}
-    <button><a href="{% url 'login' %}">Login</a></button>
-    <button><a href="{% url 'signup' %}">Sign Up</a></button>
-  {% endif %}
+    <script>
 
+      window.CSRF_TOKEN = "{{ csrf_token }}";
 
-  {% block body %}
+      $(document).on('click', '.like_btn', function() {
+        var postId = this.id.replace('post_', '');
+        var $path = $(this).find('path');
 
-  {% endblock %}
-</body>
+        $.ajax({
+          method: "POST",
+          url: '/post/like',
+          data: {
+            post_id: postId,
+            csrfmiddlewaretoken: window.CSRF_TOKEN
+          },
+            success: function (response) {
+              if (response['status']) {
+                $path.attr({
+                  fill: 'red',
+                  stroke: 'none'
+                });
+              } else {
+                $path.attr({
+                  fill: 'none',
+                  stroke: 'black'
+                });
+              }
+
+              $(`#post_${postId}_count`).text(response['count']);
+          },
+          error: function(error) {
+            console.error('There was a problem with the AJAX request:', error);
+          }
+        }
+        )
+      })
+    </script>
+  </body>
 </html>

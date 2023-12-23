@@ -1,5 +1,10 @@
 {% extends 'users/base.html' %}
 
 {% block body %}
-<h1>Home page</h1>
+
+{% include 'users/components/user_profile.html' %}
+
+{% for post in posts %}
+    {% include 'posts/components/post.html' %}
+{% endfor %}
 {% endblock %}
