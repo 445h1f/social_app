@@ -7,6 +7,7 @@
     <title>{% if title %} {{ title }} {% else %} SocialApp {% endif %}</title>
     {% include 'users/head/css.html' %}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@2.x.x/dist/alpine.min.js" defer></script>
   </head>
   <body>
     {% include 'users/components/navbar.html' %}
@@ -15,40 +16,128 @@
 
     <script>
 
-      window.CSRF_TOKEN = "{{ csrf_token }}";
+      {% if request.user.is_authenticated %}
 
-      $(document).on('click', '.like_btn', function() {
-        var postId = this.id.replace('post_', '');
-        var $path = $(this).find('path');
+        window.CSRF_TOKEN = "{{ csrf_token }}";
 
-        $.ajax({
-          method: "POST",
-          url: '/post/like',
-          data: {
-            post_id: postId,
-            csrfmiddlewaretoken: window.CSRF_TOKEN
-          },
-            success: function (response) {
-              if (response['status']) {
-                $path.attr({
-                  fill: 'red',
-                  stroke: 'none'
-                });
-              } else {
-                $path.attr({
-                  fill: 'none',
-                  stroke: 'black'
-                });
-              }
+        function updateCharCount(input, maxLength, className) {
+          var currentLength = input.value.length;
 
-              $(`#post_${postId}_count`).text(response['count']);
-          },
-          error: function(error) {
-            console.error('There was a problem with the AJAX request:', error);
+
+          if (currentLength > maxLength) {
+            input.value = input.value.substring(0, maxLength);
+            currentLength = input.value.length;
           }
+          var countElement = document.querySelector(`.${className}`);
+          countElement.textContent = currentLength + '/' + maxLength;
         }
-        )
-      })
+        $(document).on('click', '#logout', function() {
+          $.ajax({
+            method: "POST",
+            url: '{% url "logout" %}',
+            data: {
+              csrfmiddlewaretoken: window.CSRF_TOKEN
+            },
+              success: function (response) {
+              window.location.href = "{% url 'feed' %}";
+            },
+            error: function(error) {
+              console.error('There was a problem with the AJAX request:', error);
+            }
+          }
+          )
+        })
+
+
+
+        $(document).on('click', '.like_btn', function() {
+          var postId = this.id.replace('like_post_', '');
+          var $path = $(this).find('path');
+
+          $.ajax({
+            method: "POST",
+            url: '/post/like',
+            data: {
+              post_id: postId,
+              csrfmiddlewaretoken: window.CSRF_TOKEN
+            },
+              success: function (response) {
+                if (response['status']) {
+                  $path.attr({
+                    fill: 'red',
+                    stroke: 'none'
+                  });
+                } else {
+                  $path.attr({
+                    fill: 'none',
+                    stroke: 'black'
+                  });
+                }
+
+                $(`#like_count_${postId}`).text(response['count']);
+            },
+            error: function(error) {
+              console.error('There was a problem with the AJAX request:', error);
+            }
+          }
+          )
+        })
+
+        function handleCommentKeyPress(event, postId) {
+          if (event.key === 'Enter') {
+              handleCommentAction(postId);
+          }
+      }
+
+      function handleCommentButtonClick(postId) {
+          handleCommentAction(postId);
+      }
+
+      function handleCommentAction(postId) {
+          var comment_el = document.getElementById(`comment_post_${postId}`);
+          var comment_text = comment_el.value.trim(); // Use trim() to remove leading/trailing whitespaces
+
+          if (comment_text.length > 0) {
+            $.ajax({
+              method: "POST",
+              url: '{% url "comment" %}',
+              data: {
+                  post_id: postId,
+                  comment: comment_text,
+                  csrfmiddlewaretoken: window.CSRF_TOKEN
+              },
+              success: function (response) {
+                  comment_el.value = "";
+                  document.getElementById(`new_comment_${postId}`).innerHTML = response["html"];
+                  $(`#comment_count_${postId}`).text(response['count']);
+              },
+              error: function(error) {
+                  console.error('There was a problem with the AJAX request:', error);
+              }
+          });
+          }
+      }
+
+
+
+        {% endif %}
+        $(document).on('click', '.view-user', function() {
+          var username = this.getAttribute('username');
+          var url = "{% url 'profile' username=0 %}".replace('0', username);
+          window.location.href = url;
+        })
+
+      {% if not single_post %}
+        function viewPost(postId) {
+          var postUrl = "{% url 'view_post' post_id=0 %}".replace('0', postId);
+          window.location.href = postUrl;
+        }
+      {% endif %}
     </script>
+
+    {% block js_script %}
+
+    {% endblock %}
+
   </body>
 </html>

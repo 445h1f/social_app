@@ -1,0 +1,15 @@
+<div class="mx-auto bg-white shadow-md rounded-md p-4 mt-4">
+  <div class="flex items-center">
+    <img src="{{ comment.user.profile.image.url }}" class="bg-yellow-500 rounded-full w-10 h-10 object-cover border view-user cursor-pointer" username="{{ comment.user.username }}">
+    <div class="ml-4">
+      <p class="text-sm font-semibold view-user cursor-pointer underline" username="{{ comment.user.username }}">@{{ comment.user.username }}</p>
+      <p class="text-xs text-gray-500">{{ comment.created_at | timesince }} ago</p>
+    </div>
+  </div>
+
+  <div class="mt-2">
+    <div class="flex items-center justify-between bg-gray-50 h-11 w-full border rounded-2xl overflow-hidden px-4">
+      <input type="text" class="h-full w-full bg-gray-50 outline-none" value="{{ comment.body|linebreaksbr }}" disabled>
+    </div>
+  </div>
+</div>

@@ -1,8 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
 from .forms import PostCreationForm
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import Post
+from django.template.loader import render_to_string
+from .models import Post, Comment
 
 # Create your views here.
 
@@ -16,13 +17,14 @@ def create_post(request):
             data=request.POST,
             files=request.FILES
         )
-
         # checking if form is valid
-        if post_form.is_valid():
+        if post_form.is_valid() and request.POST['title'].strip() <= 200 and request.POST['caption'] <= 5000:
             # create post object and not saving it in db bcoz user of post not set
             new_post = post_form.save(commit=False)
             new_post.user = request.user # adding logged in user to post
             new_post.save() #saving post in db
+
+            return redirect('feed')
         else:
             return HttpResponse('invalid data')
     else:
@@ -33,6 +35,20 @@ def create_post(request):
     }
     return render(request, 'posts/create.html', context=context)
 
+
+# view to display post in a single page
+def view_post(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+    except:
+    # if post not found with given post id, redirecting to feed
+        return redirect('feed')
+    context = {
+        "post" : post,
+        "single_post" : True,
+        "title" : f'Post | @{post.user.username}'
+    }
+    return render(request, 'posts/single_post.html', context)
 
 
 # feed page
@@ -49,7 +65,14 @@ def feed_page(request):
 def like_post(request):
     if request.method == 'POST':
         post_id = request.POST.get('post_id')
-        post = get_object_or_404(Post, id=post_id)
+        try:
+            post = Post.objects.get(pk=post_id)
+        except:
+        # if post not found with given post id, redirecting to feed
+            return JsonResponse({
+            "error": "invalid request"
+        },  status=404)
+
         status = False
 
         # if post is already liked, the unlike it
@@ -64,8 +87,45 @@ def like_post(request):
         return JsonResponse({
             "count" : post.liked_by.count(),
             'status' : status
-        })
+        }, status=200)
     else:
         return JsonResponse({
             "error": "invalid request"
-        })
+        }, status=404)
+
+
+@login_required
+def comment_post(request):
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        try:
+            post = Post.objects.get(pk=post_id)
+        except:
+        # if post not found with given post id, redirecting to feed
+            return JsonResponse({
+            "error": "invalid request"
+            }, status=404)
+
+        comment_text = request.POST.get('comment').strip()
+        if len(comment_text) > 50:
+            return JsonResponse({
+                "error": "invalid request"
+                }, status=404)
+        comment = Comment(post=post, user=request.user, body=comment_text)
+        comment.save()
+
+        comment_element = render_to_string(
+            'posts/components/comment.html',
+            {
+                "comment" : comment
+            }
+        )
+        print(comment_element)
+        return JsonResponse({
+            "count" : post.comments.count(),
+            "html" : comment_element,
+        }, status=200)
+    else:
+        return JsonResponse({
+            "error": "invalid request",
+        }, status=404)

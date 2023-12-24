@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from .forms import LoginForm, SignupForm, UserEditForm, UserProfileEditForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .models import Profile
 from posts.models import Post
+
 
 
 # Create your views here.
@@ -13,7 +15,7 @@ from posts.models import Post
 def user_login(request):
     # redirecting user to user home page if already logged in
     if request.user.is_authenticated:
-        return redirect('user_home')
+        return redirect('feed')
 
 
     # handles login data
@@ -30,30 +32,16 @@ def user_login(request):
             # logging user if it is valid
             if user is not None:
                 login(request, user=user)
-                return redirect('user_home')
+                return redirect('feed')
             else:
                 # for invalid credentials
                 return HttpResponse(f'Invalid login credentials')
         else: # sending invalid request when form data is not valid
-            return redirect('user_home')
+            return redirect('feed')
     else:
         form = LoginForm()
 
     return render(request, 'users/login.html', context={"form":form})
-
-
-# handles index page request
-@login_required
-def user_index(request):
-    # displaying all posts by user
-    current_user = request.user
-    posts = Post.objects.filter(user=current_user)
-
-    context = {
-        "posts" : posts,
-    }
-
-    return render(request, 'users/index.html', context)
 
 
 # handles user signup request
@@ -117,10 +105,17 @@ def edit_user(request):
 
 # handles profile page request of user
 @login_required
-def profile(request):
-    user_profile = Profile.objects.get(user=request.user)
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+        user_profile = Profile.objects.get(user=user)
+        posts = Post.objects.filter(user=user).order_by('created_at').reverse()
+
+    except:
+        return redirect('feed')
 
     context = {
         "profile" : user_profile,
+        "posts" : posts,
     }
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/index.html', context)
