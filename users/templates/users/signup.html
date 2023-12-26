@@ -83,8 +83,40 @@
   <!-- Right Pane -->
   <div class="w-full bg-gray-100 lg:w-1/2 flex items-center justify-center">
     <div class="max-w-md w-full p-6">
-      <h1 class="text-3xl font-semibold mb-6 text-black text-center">Sign Up</h1>
-      <h1 class="text-sm font-semibold mb-6 text-gray-500 text-center">Join to Our Community with all time access and free </h1>
+      <h1 class="text-3xl font-semibold mb-4 text-black text-center">Sign Up</h1>
+      <h1 class="text-sm font-semibold mb-4 text-gray-500 text-center">Join to Our Community and share your thoughts </h1>
+
+      {% if username_taken %}
+			<div class="w-full bg-red-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Username already taken! Try different one.
+				</div>
+			</div>
+      {% endif %}
+
+      {% if invalid_email  %}
+      <div class="w-full bg-red-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Inavlid E-Mail address.
+				</div>
+			</div>
+      {% endif %}
+
+      {% if  email_taken %}
+      <div class="w-full bg-red-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Email already used. Use different one.
+				</div>
+			</div>
+      {% endif %}
+
+      {% if signup_error %}
+      <div class="w-full bg-red-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Something went wrong. Try again!
+				</div>
+			</div>
+      {% endif %}
       <form method="POST" class="space-y-4">
         {% csrf_token %}
         <!-- Your form elements go here -->

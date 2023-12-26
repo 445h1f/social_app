@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Profile
 from posts.models import Post
+from django.core.validators import validate_email
 
 
 
@@ -22,6 +23,8 @@ def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST) #getting form data
 
+
+
         #checking user if form data is valid
         if form.is_valid():
             data = form.cleaned_data # cleaning it
@@ -34,25 +37,48 @@ def user_login(request):
                 login(request, user=user)
                 return redirect('feed')
             else:
-                # for invalid credentials
-                return HttpResponse(f'Invalid login credentials')
+                # sending invalid credentials in response
+                return render(request, 'users/login.html', {"invalid_login" : True})
         else: # sending invalid request when form data is not valid
-            return redirect('feed')
+            return render(request, 'users/login.html', {"login_error" : True})
     else:
-        form = LoginForm()
-
-    return render(request, 'users/login.html', context={"form":form})
+        return render(request, 'users/login.html')
 
 
 # handles user signup request
 def user_signup(request):
     # checks if user is logged in and if yes, then redirect to user home page
     if request.user.is_authenticated:
-        return redirect('user_home')
+        return redirect('feed')
 
     # if form data is submitted
     if request.method == 'POST':
         signup_form = SignupForm(request.POST)
+
+        # returing error if account already exists with username
+        try:
+            username = request.POST['username'].strip()
+
+            User.objects.get(username=username)
+            return render(request, 'users/signup.html', {"username_taken" : True})
+        except:
+            pass
+
+        # first validating email
+        try:
+            email = request.POST['email'].strip()
+            validate_email(email)
+
+            #returning error if account already exitss with email
+            try:
+                User.objects.get(email=email)
+                return render(request, 'users/signup.html', {"email_taken" : True})
+            except:
+                pass
+        except:
+            #invalid email
+            return render(request, 'users/signup.html', {"invalid_email" : True})
+
 
         # first check if signup_form is data is valid
         if signup_form.is_valid():
@@ -60,11 +86,12 @@ def user_signup(request):
             new_user.set_password(signup_form.cleaned_data['password_confirm'])
             new_user.save()
             Profile.objects.create(user=new_user)
-            return render(request, 'users/signup_complete.html')
 
+            return render(request, 'users/login.html', {"signup_success" : True})
+        else:
+            return render(request, 'users/signup.html', {"signup_error" : True})
     else:
-        signup_form = SignupForm()
-        return render(request, 'users/signup.html', {'signup_form': signup_form})
+        return render(request, 'users/signup.html')
 
 
 @login_required

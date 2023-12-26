@@ -4,24 +4,47 @@
 
 {% block body %}
 <div class="relative min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8  bg-no-repeat bg-cover relative items-center">
-	<div class="absolute inset-0 z-0"></div>
 	<div class="max-w-md w-full space-y-8 p-10 bg-white rounded-xl z-10">
 		<div class="text-center">
 			<h2 class="mt-6 text-3xl font-bold text-gray-900">
 				Welcome Back!
 			</h2>
 			<p class="mt-2 text-sm text-gray-600">Please sign in to your account</p>
+
+			{% if signup_success %}
+			<div class="w-full bg-green-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Signup successful! Login below to get started.
+				</div>
+			</div>
+			{% endif %}
+
+
+			{% if invalid_login %}
+			<div class="w-full bg-red-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Invalid username or password!
+				</div>
+			</div>
+			{% endif %}
+
+			{% if login_error %}
+			<div class="w-full bg-red-500 text-sm text-white rounded-md shadow-lg" role="alert">
+				<div class="flex p-3 mt-4">
+					Something wen't wrong! Try again.
+				</div>
+			</div>
+			{% endif %}
 		</div>
+			<form class="mt-0 space-y-6" method="POST">
+				{% csrf_token %}
+				<input type="hidden" name="remember" value="true">
+				<div class="content-center">
 
-		<form class="mt-8 space-y-6" action="#" method="POST">
-      {% csrf_token %}
-			<input type="hidden" name="remember" value="true">
-			<div class="relative">
-
-				<label for="username" class="text-sm font-bold text-gray-700 tracking-wide">Username</label>
-				<input class=" w-full text-base py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500" type="text" name="username" id="id_username" placeholder="Enter your username">
-            </div>
-			<div class="mt-8 content-center">
+					<label for="username" class="text-sm font-bold text-gray-700 tracking-wide">Username</label>
+					<input class=" w-full text-base py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500" type="text" name="username" id="id_username" placeholder="Enter your username">
+				</div>
+			<div class="content-center">
 				<label class="text-sm font-bold text-gray-700 tracking-wide">
 					Password
 				</label>

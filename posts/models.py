@@ -8,7 +8,7 @@ from django.utils.text import slugify
 class Post(models.Model):
 
     # user who created the post
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleteduser'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(None))
 
     #image if added with post
     image = models.ImageField(upload_to='post/%Y/%m/%d', blank=True)
@@ -34,8 +34,8 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.SET('Deleted post'), related_name='comments')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET('deleted user'), related_name='comment_user')
+    post = models.ForeignKey(Post, on_delete=models.SET(None), related_name='comments')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(None), related_name='comment_user')
     body = models.TextField()
     created_at = models.DateTimeField(auto_now=True)
 

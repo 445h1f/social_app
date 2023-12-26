@@ -28,7 +28,7 @@
 		</div>
     <div class=" h-16 border-b  flex items-center justify-around	">
 			<div class="flex items-center	gap-4 mr-6">
-        <svg xmlns="http://www.w3.org/2000/svg" class="like_btn h-6 w-6" viewBox="0 0 20 20"
+        <svg xmlns="http://www.w3.org/2000/svg" class="like_btn cursor-pointer h-6 w-6" viewBox="0 0 20 20"
           fill="currentColor" id="like_post_{{ post.id }}">
             {% if request.user in post.liked_by.all %}
               <path fill="red" stroke="red"
@@ -45,7 +45,7 @@
           <div class="text-sm" id="like_count_{{ post.id }}">{{ post.liked_by.count }} </div>
       </div>
       <div class="flex items-center	gap-4	mr-6">
-					<svg width="20px" height="19px" viewBox="0 0 20 19" version="1.1" xmlns="http://www.w3.org/2000/svg"
+					<svg width="20px" height="19px" class="cursor-pointer" viewBox="0 0 20 19" version="1.1" xmlns="http://www.w3.org/2000/svg"
 						xmlns:xlink="http://www.w3.org/1999/xlink">
 						<g id="?-Social-Media" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 							<g id="Square_Timeline" transform="translate(-312.000000, -746.000000)">
@@ -74,7 +74,7 @@
 					<div class="text-sm" id="comment_count_{{ post.id}}">{{ post.comments.count }} </div>
 				</div>
 				<div class="flex items-center	gap-4 mr-6">
-					<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg"
+					<svg width="22px" height="22px" class="cursor-pointer" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg"
 						xmlns:xlink="http://www.w3.org/1999/xlink">
 						<g id="?-Social-Media" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 							<g id="Square_Timeline" transform="translate(-636.000000, -745.000000)">
@@ -104,7 +104,7 @@
 					<div class="text-sm">5</div>
 				</div>
 				<div class="flex items-center	gap-4">
-					<svg width="17px" height="22px" viewBox="0 0 17 22" version="1.1" xmlns="http://www.w3.org/2000/svg"
+					<svg width="17px" height="22px" class="cursor-pointer" viewBox="0 0 17 22" version="1.1" xmlns="http://www.w3.org/2000/svg"
 						xmlns:xlink="http://www.w3.org/1999/xlink">
 						<g id="?-Social-Media" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 							<g id="Square_Timeline" transform="translate(-787.000000, -745.000000)">
@@ -145,7 +145,7 @@
 				  <img src="{{ request.user.profile.image.url }}"  class="bg-yellow-500 rounded-full w-10 h-10 object-cover border">
 				  <div class="flex items-center justify-between bg-gray-50 h-11 w-11/12 border rounded-2xl overflow-hidden px-4" >
             <input type="text" class="h-full w-full bg-gray-50 outline-none comment" placeholder="Write your comment..." name="comment" id="comment_post_{{ post.id }}" oninput="updateCharCount(this, 50, 'comment-count-{{post.id}}')" onkeypress="handleCommentKeyPress(event, {{ post.id }})">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-arrow-right-circle-fill comment_btn" viewBox="0 0 16 16" post_id="{{ post.id }}" onclick="handleCommentButtonClick({{ post.id }})">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="cursor-pointer bi bi-arrow-right-circle-fill comment_btn" viewBox="0 0 16 16" post_id="{{ post.id }}" onclick="handleCommentButtonClick({{ post.id }})">
 						    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z">
 						    </path>
 						</svg>
