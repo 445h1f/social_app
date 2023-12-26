@@ -19,7 +19,7 @@
       </div>
 
       <div class="md:flex md:items-center md:gap-12">
-        <!-- <nav aria-label="Global" class="hidden md:block">
+        <nav aria-label="Global" class="hidden md:block">
           <ul class="flex items-center gap-6 text-sm">
             <li>
               <a
@@ -30,75 +30,61 @@
               </a>
             </li>
 
-            <li>
-              <a
-                class="text-gray-500 transition hover:text-gray-500/75"
-                href="/"
-              >
-                Trending
-              </a>
-            </li>
-
-            <li>
-              <a
-                class="text-gray-500 transition hover:text-gray-500/75"
-                href="/"
-              >
-                Support
-              </a>
-            </li>
-
-
-          </ul>
-        </nav> -->
-
-
-        <div class="flex items-center gap-4">
-          <div class="sm:flex sm:gap-4">
-            <a
-              class="rounded-md bg-yellow-400 px-5 py-2.5 text-sm font-medium text-white shadow" href="{% url 'feed' %}">
-              Feed
-            </a>
             {% if request.user.is_authenticated %}
-            <div class="hidden sm:flex">
-
+            <li>
               <a
-              class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow" href="{% url 'create_post' %}">
+                class="text-gray-500 transition hover:text-gray-500/75"
+                href="{% url 'create_post' %}"
+              >
               Post
-            </a>
-            </div>
-              <div class="hidden sm:flex">
-                <a
-                  class="rounded-md bg-black text-white px-5 py-2.5 text-sm font-medium"
-                  href="{% url 'profile' request.user.username %}">
-                  Profile
-                </a>
-              </div>
-              <div class="hidden sm:flex">
-                <a
-                  class="rounded-md bg-red-500 text-white px-5 py-2.5 text-sm font-medium"
-                  href="" id="logout">
-                  Logout
-                </a>
-              </div>
-            {% else %}
+              </a>
+            </li>
+
+            <li>
               <a
-                class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow"
+                class="text-gray-500 transition hover:text-gray-500/75"
+                href="{% url 'profile' request.user.username %}"
+              >
+              Profile
+              </a>
+            </li>
+
+            <li>
+              <a
+                class="text-gray-500 transition hover:text-gray-500/75"
+                href="" id="logout"
+              >
+              Logout
+              </a>
+            </li>
+
+
+            {% else %}
+
+            <li>
+              <a
+                class="text-gray-500 transition hover:text-gray-500/75"
                 href="{% url 'login' %}"
               >
-                Login
+              Login
               </a>
+            </li>
 
-              <div class="hidden sm:flex">
-                <a
-                  class="rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600"
-                  href="{% url 'signup' %}"
-                >
-                  Signup
-                </a>
-              </div>
-              {% endif %}
-          </div>
+            <li>
+              <a
+                class="text-gray-500 transition hover:text-gray-500/75"
+                href="{% url 'signup' %}"
+              >
+                Signup
+              </a>
+            </li>
+            {% endif %}
+
+          </ul>
+        </nav>
+
+
+
 
           <div class="block md:hidden">
             <button

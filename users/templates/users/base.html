@@ -16,6 +16,14 @@
 
     <script>
 
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.querySelector(".block.md\\:hidden button");
+        const navMenu = document.querySelector(".hidden.md\\:block");
+
+        mobileMenuButton.addEventListener("click", function () {
+          navMenu.classList.toggle("hidden");
+        });
+      });
       {% if request.user.is_authenticated %}
 
         window.CSRF_TOKEN = "{{ csrf_token }}";
