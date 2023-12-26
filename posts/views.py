@@ -18,7 +18,7 @@ def create_post(request):
             files=request.FILES
         )
         # checking if form is valid
-        if post_form.is_valid() and request.POST['title'].strip() <= 200 and request.POST['caption'] <= 5000:
+        if post_form.is_valid() and len(request.POST['title'].strip()) <= 200 and len(request.POST['caption']) <= 5000:
             # create post object and not saving it in db bcoz user of post not set
             new_post = post_form.save(commit=False)
             new_post.user = request.user # adding logged in user to post
