@@ -36,6 +36,8 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'users',
     'posts',
+    'chats',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'social_app.wsgi.application'
+ASGI_APPLICATION = 'social_app.asgi.application'
 
 
 # Database

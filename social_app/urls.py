@@ -26,6 +26,7 @@ urlpatterns = [
     path('', view=posts_view.feed_page, name='feed'),
     path('user/', include('users.urls')),
     path('post/', include('posts.urls')),
+    path('chat/', include('chats.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
