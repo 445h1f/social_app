@@ -9,21 +9,15 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@2.x.x/dist/alpine.min.js" defer></script>
   </head>
-  <body>
+  <body {% if chats %} style="overflow: hidden;" {% endif %}>
+
     {% include 'users/components/navbar.html' %}
 
     {% block body %} {% endblock %}
 
     <script>
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuButton = document.querySelector(".block.md\\:hidden button");
-        const navMenu = document.querySelector(".hidden.md\\:block");
 
-        mobileMenuButton.addEventListener("click", function () {
-          navMenu.classList.toggle("hidden");
-        });
-      });
       {% if request.user.is_authenticated %}
 
         window.CSRF_TOKEN = "{{ csrf_token }}";
@@ -91,15 +85,13 @@
           )
         })
 
-        function handleCommentKeyPress(event, postId) {
+      function handleCommentKeyPress(event, postId) {
           if (event.key === 'Enter') {
               handleCommentAction(postId);
           }
       }
 
-      function handleCommentButtonClick(postId) {
-          handleCommentAction(postId);
-      }
+
 
       function handleCommentAction(postId) {
           var comment_el = document.getElementById(`comment_post_${postId}`);

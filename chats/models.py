@@ -25,9 +25,9 @@ class SingleUserRoom(models.Model):
 class ChatMessage(models.Model):
     # user who sent the message
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(None), related_name='user_chat_message')
-    message = models.TextField(max_length=5000)
+    body = models.TextField(max_length=5000)
     chatroom = models.ForeignKey(SingleUserRoom, on_delete=models.SET(None), related_name='message_room')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.chatroom} - {self.message[:50]}'
+        return f'{self.chatroom} - {self.body[:50]}'

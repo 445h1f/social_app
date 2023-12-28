@@ -8,7 +8,17 @@ from .models import SingleUserRoom, ChatMessage
 def chat_index(request):
 
     chats = SingleUserRoom.get_user_rooms(request.user)
-    return render(request, 'chats/index.html', {"chats" : chats})
+
+    context = {
+        "chats" : chats,
+    }
+
+    # getting message of first chatroom
+    for chat in chats:
+        messages = ChatMessage.objects.filter(chatroom=chats[0])
+        context["messages"] = messages
+
+    return render(request, 'chats/chat_layout.html', context)
 
 
 
