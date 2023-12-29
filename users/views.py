@@ -1,13 +1,15 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from .forms import LoginForm, SignupForm, UserEditForm, UserProfileEditForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from .models import Profile
 from posts.models import Post
 from django.core.validators import validate_email
 
+
+# user model
+User = get_user_model()
 
 
 # Create your views here.

@@ -1,14 +1,19 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils.text import slugify
+import uuid
+
+User = get_user_model()
 
 # Create your models here.
 
 # model for social media post by user
 class Post(models.Model):
+    # uuid as primary key
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # user who created the post
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(None))
+    user = models.ForeignKey(User, on_delete=models.SET(None))
 
     #image if added with post
     image = models.ImageField(upload_to='post/%Y/%m/%d', blank=True)
@@ -19,7 +24,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True) # date and time of post, by default current date&time will be set
 
     # post liked by which user (this can be many)
-    liked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='posts_liked', blank=True)
+    liked_by = models.ManyToManyField(User, related_name='posts_liked', blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -34,8 +39,9 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post, on_delete=models.SET(None), related_name='comments')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(None), related_name='comment_user')
+    user = models.ForeignKey(User, on_delete=models.SET(None), related_name='comment_user')
     body = models.TextField()
     created_at = models.DateTimeField(auto_now=True)
 
