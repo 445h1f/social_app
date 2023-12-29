@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from .forms import LoginForm, SignupForm, UserEditForm, UserProfileEditForm
 from django.contrib.auth.decorators import login_required
@@ -7,9 +8,34 @@ from .models import Profile
 from posts.models import Post
 from django.core.validators import validate_email
 
-
-# user model
 User = get_user_model()
+
+# password validation function
+def validate_password(password):
+    # checking if password is of length 8 or not
+    if len(password) < 8:
+        return False
+
+    # checking if password has atleast one uppercase letter
+    if not any(char.isupper() for char in password):
+        return False
+
+    # checking if password has atleast one lowercase letter
+    if not any(char.islower() for char in password):
+        return False
+
+    # checking if password has atleast one digit
+    if not any(char.isdigit() for char in password):
+        return False
+
+    # checking if password has atleast one special character
+    special_characters = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '[', ']', '{', '}', '|', '\\', '/', '<', '>', ',', '.', '?', ':', ';', '~', '`']
+    if not any(char in special_characters for char in password):
+        return False
+
+    return True
+
+
 
 
 # Create your views here.
@@ -44,7 +70,12 @@ def user_login(request):
         else: # sending invalid request when form data is not valid
             return render(request, 'users/login.html', {"login_error" : True})
     else:
-        return render(request, 'users/login.html')
+        context = {}
+
+        if 'source' in request.GET and request.GET['source'] == 'signup':
+            context['signup_success'] = True
+
+        return render(request, 'users/login.html', context)
 
 
 # handles user signup request
@@ -59,10 +90,10 @@ def user_signup(request):
 
         # returing error if account already exists with username
         try:
-            username = request.POST['username'].strip()
+            username = request.POST['username'].strip().lower()
 
             User.objects.get(username=username)
-            return render(request, 'users/signup.html', {"username_taken" : True})
+            return render(request, 'users/signup.html', {"username_taken" : True, "form": signup_form})
         except:
             pass
 
@@ -74,7 +105,7 @@ def user_signup(request):
             #returning error if account already exitss with email
             try:
                 User.objects.get(email=email)
-                return render(request, 'users/signup.html', {"email_taken" : True})
+                return render(request, 'users/signup.html', {"email_taken" : True, "form": signup_form})
             except:
                 pass
         except:
@@ -84,12 +115,19 @@ def user_signup(request):
 
         # first check if signup_form is data is valid
         if signup_form.is_valid():
+
+            # validating password
+            if not validate_password(signup_form.cleaned_data['password']):
+                return render(request, 'users/signup.html', {"invalid_password" : True, "form": signup_form})
+
             new_user = signup_form.save(commit=False)
             new_user.set_password(signup_form.cleaned_data['password_confirm'])
             new_user.save()
             Profile.objects.create(user=new_user)
 
-            return render(request, 'users/login.html', {"signup_success" : True})
+            # redirect to login page with context passed as signup_success
+            return redirect(reverse('login') + '?source=signup')
+
         else:
             return render(request, 'users/signup.html', {"signup_error" : True})
     else:

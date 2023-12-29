@@ -15,11 +15,6 @@ urlpatterns = [
         name = 'signup'
     ),
     path(
-        'signup/success',
-        view = views.user_signup,
-        name = 'signup_success'
-    ),
-    path(
         'logout/',
         view = auth_views.LogoutView.as_view(
             template_name = 'users/logout.html'
