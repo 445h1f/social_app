@@ -12,7 +12,7 @@
 			</div>
 		</div>
 		{% if not single_post %}
-			<div class="cursor-pointer" onclick="viewPost({{ post.id }})">
+			<div class="cursor-pointer" onclick="viewPost('{{ post.id }}')">
 		{% else %}
 			<div>
 		{% endif %}
