@@ -79,5 +79,25 @@ urlpatterns = [
         ),
         name = 'password_reset_complete'
     ),
+    path(
+        'api/follow/',
+        view = views.follow_user,
+        name = 'follow_user'
+    ),
+    path(
+        'api/unfollow/',
+        view = views.unfollow_user,
+        name = 'unfollow_user'
+    ),
+    path(
+        'api/following',
+        view = views.get_following_list,
+        name = 'following_list'
+    ),
+    path(
+        'api/followers',
+        view = views.get_followers_list,
+        name = 'followers_list'
+    )
 ]
 

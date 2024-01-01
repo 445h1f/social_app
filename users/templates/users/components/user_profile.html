@@ -4,31 +4,50 @@
           <div class="w-full flex justify-center mt-2 ">
               <img src="{{ profile.image.url }}" class="align-middle border-none w-full h-full object-cover rounded-full overflow-hidden  max-w-[150px]"/>
           </div>
-          <div class="w-full text-center mt-2">
-              <div class="flex justify-center lg:pt-4 pt-8 pb-0">
-                  <div class="p-3 text-center">
-                      <span class="text-xl font-bold block uppercase tracking-wide text-slate-700">9,999</span>
-                      <span class="text-sm text-slate-400">Posts</span>
-                  </div>
-                  <div class="p-3 text-center">
-                      <span class="text-xl font-bold block uppercase tracking-wide text-slate-700">9,999</span>
-                      <span class="text-sm text-slate-400">Followers</span>
-                  </div>
+          <div class="text-center mt-2">
+            <h3 class="text-2xl text-slate-700 font-bold leading-normal mb-1">@{{ profile.user.username }}</h3>
+            <div class="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
+                <i class="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"></i>
+                {{ profile.user.first_name }}
+            </div>
+            <div class="w-full text-center mt-2">
+                <div class="flex justify-center lg:pt-4 pt-8 pb-0">
+                    <div class="p-3 text-center">
+                        <span class="text-xl font-bold block uppercase tracking-wide text-slate-700">{{ posts.count }}</span>
+                        <span class="text-sm text-slate-400">Posts</span>
+                    </div>
+                    <div class="p-3 text-center" onclick="getFollowersList();">
+                        <span id="followers-count" class="text-xl font-bold block uppercase tracking-wide text-slate-700">{{ profile.followers.count }}</span>
+                        <span class="text-sm text-slate-400">Followers</span>
+                    </div>
 
-                  <div class="p-3 text-center">
-                      <span class="text-xl font-bold block uppercase tracking-wide text-slate-700">9,999</span>
-                      <span class="text-sm text-slate-400">Following</span>
-                  </div>
-              </div>
+                    <div class="p-3 text-center" onclick="getFollowingList();">
+                        <span id="following-count" class="text-xl font-bold block uppercase tracking-wide text-slate-700">{{ profile.following.count }}</span>
+                        <span class="text-sm text-slate-400">Following</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inline-flex rounded-md mb-5" role="group">
+
+              {% if request.user != profile.user %}
+              {% if request.user not in profile.followers.all %}
+              <button type="button" class="mr-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gradient-to-tr from-teal-600 to-teal-400 transition ease-in-out duration-150 " onclick="followUser(this);">
+                Follow
+                {% else %}
+                <button type="button" class="mr-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gradient-to-tr from-red-600 to-red-400 transition ease-in-out duration-150 " onclick="followUser(this);">
+                Unfollow
+                {% endif %}
+            </button>
+              <button type="button" class="ml-2 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-gradient-to-tr from-blue-600 to-blue-400 transition ease-in-out duration-150" >
+              Message
+            </button>
+            {% endif %}
           </div>
-      </div>
-      <div class="text-center mt-2">
-          <h3 class="text-2xl text-slate-700 font-bold leading-normal mb-1">@{{ profile.user.username }}</h3>
-          <div class="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
-              <i class="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"></i>
-              {{ profile.user.first_name }}
           </div>
-      </div>
+
+        </div>
+
       <div class="mt-6 py-6 border-t border-slate-200 text-center">
           <div class="flex flex-wrap justify-center">
               <div class="w-full px-4">

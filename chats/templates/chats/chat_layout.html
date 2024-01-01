@@ -149,7 +149,7 @@
     document.getElementById(`chatroom-${data['chatroom_id']}-lastmessage`).innerText = data['message'];
 
     // for incoming message
-    if (parseInt(data['user_id']) !== parseInt(userId)) {
+    if (data['user_id'] !== userId) {
       var chatHtml = `<div class="flex mb-4 cursor-pointer">
         <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
           <img src="${data['user_image']}" alt="User Avatar" class="w-8 h-8 rounded-full">

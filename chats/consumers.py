@@ -2,8 +2,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from channels.db import database_sync_to_async
 from .models import ChatMessage, SingleUserRoom
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from users.models import Profile
+
+User = get_user_model()
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -34,7 +36,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_user_by_id(self, user_id):
-        return User.objects.get(id=int(user_id))
+        return User.objects.get(id=user_id)
 
     @database_sync_to_async
     def get_user_profile_image(self, user):
@@ -42,7 +44,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_chatroom_by_id(self, room_id):
-        return SingleUserRoom.objects.get(id=int(room_id))
+        return SingleUserRoom.objects.get(id=room_id)
 
 
     async def receive(self, text_data):

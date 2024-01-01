@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile
 from posts.models import Post
 from django.core.validators import validate_email
+import time
+
 
 User = get_user_model()
 
@@ -185,4 +187,135 @@ def profile(request, username):
         "profile" : user_profile,
         "posts" : posts,
     }
+
     return render(request, 'users/index.html', context)
+
+
+
+# handles follow of user
+@login_required
+def follow_user(request):
+    #following user on post request
+    if request.method == 'POST':
+        username = request.POST.get('username').strip().lower()
+
+        if username == request.user.username:
+            return JsonResponse({"error" : "You cannot follow yourself"})
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            return JsonResponse({"error" : "User not found"})
+
+        # checking if user is already followed or not
+        if user not in request.user.profile.following.all():
+            # if not followed, following
+            request.user.profile.following.add(user)
+            user.profile.followers.add(request.user)
+            print(request.user.profile.following.all())
+            print(user.profile.followers.all())
+            return JsonResponse({
+                "success" : True,
+                "followers_count" : user.profile.followers.count(),
+                "following_count" : user.profile.following.count(),
+            })
+        else:
+            return JsonResponse({"error" : "Already following"})
+    else:
+        return JsonResponse({"error" : "Invalid request"})
+
+
+# handles unfollow of user
+@login_required
+def unfollow_user(request):
+    #unfollowing user on post request
+    if request.method == 'POST':
+
+        username = request.POST.get('username').strip().lower()
+
+        if username == request.user.username:
+            return JsonResponse({"error" : "You cannot follow yourself"})
+        try:
+            user = User.objects.get(username=username)
+        except:
+            return JsonResponse({"error" : "User not found"})
+
+        # checking if user is already followed or not
+        if user in request.user.profile.following.all():
+            # if followed, unfollowing
+            request.user.profile.following.remove(user)
+            user.profile.followers.remove(request.user)
+            return JsonResponse({
+                "success" : True,
+                "followers_count" : user.profile.followers.count(),
+                "following_count" : user.profile.following.count(),
+            })
+        else:
+            return JsonResponse({"error" : "User is not followed"})
+    else:
+        return JsonResponse({"error" : "Invalid request"})
+
+
+def get_following_list(request):
+    # returning auth error if user is not logged in
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "error" : "authentication failed"
+        })
+
+    if request.method == 'GET':
+
+        try:
+            username = request.GET.get('username').strip().lower()
+            user = User.objects.get(username=username)
+        except:
+            return JsonResponse({"error" : "User not found"})
+
+        following = user.profile.following.all()
+        following_list = []
+
+        for user in following:
+            following_list.append(user.username)
+
+        return JsonResponse({
+            "success" : True,
+            "following" : following_list
+        })
+    else:
+        return JsonResponse({"error" : "Invalid request"})
+
+
+# view to get followers list of user
+def get_followers_list(request):
+    print('got request')
+    print(request.user)
+    # returning auth error if user is not logged in
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "error": "Authentication failed"
+        })
+
+    if request.method == 'GET':
+        print(request.GET)
+        # checking username
+        try:
+            # getting username from request
+            username = request.GET['username'].strip().lower()
+            user = User.objects.get(username=username)
+        except:
+            # if exception occurred, user is not found so return it
+            return JsonResponse({"error" : "User not found"})
+
+        # creating followers list of user
+        followers = user.profile.followers.all()
+        followers_list = [u.username for u in followers] # stores username of followers
+
+        print('returned followers list', followers_list)
+        return JsonResponse({
+            "success" : True,
+            "followers" : followers_list
+        })
+    else:
+        return JsonResponse({
+            "error" : "Invalid request"
+        })
